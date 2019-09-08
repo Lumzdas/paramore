@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+require_relative '../lib/paramore/cli'
+
+Paramore::Cli.config!
