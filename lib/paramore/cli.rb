@@ -23,6 +23,8 @@ module Paramore
           # config.formatter_method_name = 'run'
         end
       CONF
+
+      puts "#{config_file_path} created"
     end
   end
 end
