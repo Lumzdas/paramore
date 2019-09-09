@@ -48,7 +48,7 @@ def item_params
   @item_params ||= begin
     _params = params
       .require(:item)
-      .permit(:name, :description, :price, metadata: [tags: []])
+      .permit(:name, :description, :for_sale, :price, metadata: [tags: []])
 
     _params[:name] = _params[:name].strip.squeeze(' ') if _params[:name]
     _params[:description] = _params[:description].strip.squeeze(' ') if _params[:description]
@@ -71,7 +71,7 @@ The next logical step is extracting those procedures - this is where Paramore st
 # app/controllers/items_controller.rb
 
 declare_params :item_params
-  item: [:name, :description, :price, metadata: [tags: []]],
+  item: [:name, :description, :for_sale, :price, metadata: [tags: []]],
   format: {
     name: :Text,
     description: :Text,
