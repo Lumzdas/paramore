@@ -12,11 +12,18 @@ module Paramore
       return unless format_definition
 
       formatter_names(format_definition).each do |formatter_name|
-        begin
-          Paramore::Format.formatter_for(formatter_name)
-        rescue NameError => e
-          raise NameError, "Paramore: formatter `#{formatter_name}` is undefined! #{e}"
-        end
+        formatter =
+          begin
+            Paramore::Format.formatter_for(formatter_name)
+          rescue NameError => e
+            raise NameError, "Paramore: formatter `#{formatter_name}` is undefined! #{e}"
+          end
+
+          unless formatter.respond_to?(Paramore.configuration.formatter_method_name)
+            raise NoMethodError,
+              "Paramore: formatter `#{formatter_name}` does not respond to " +
+              "`#{Paramore.configuration.formatter_method_name}`!"
+          end
       end
     end
 

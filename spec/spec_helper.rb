@@ -4,9 +4,11 @@ require 'bundler/setup'
 Bundler.setup
 
 require_relative '../lib/paramore'
+
 require_relative 'formatters/int'
 require_relative 'formatters/int_array'
 require_relative 'formatters/text'
+require_relative 'formatters/typo'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|

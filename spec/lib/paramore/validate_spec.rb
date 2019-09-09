@@ -52,5 +52,16 @@ RSpec.describe Paramore::Validate, '.run' do
         )
       end
     end
+
+    context 'with miswritten method name' do
+      let(:format_definition) { { id: :Typo } }
+
+      it 'raises' do
+        expect { subject }.to raise_error(
+          NoMethodError,
+          'Paramore: formatter `Typo` does not respond to `run`!'
+        )
+      end
+    end
   end
 end

@@ -36,22 +36,14 @@ module Paramore
     end
 
     def formatted_value(value, formatter)
-      formatter.send(formatter_method_name, value)
+      formatter.send(Paramore.configuration.formatter_method_name, value)
     end
 
     def formatter_for(formatter_name)
       Object.const_get(
-        [formatter_namespace, formatter_name].compact.join('::'),
+        [Paramore.configuration.formatter_namespace, formatter_name].compact.join('::'),
         false # inherit=false - only get exact match
       )
-    end
-
-    def formatter_namespace
-      Paramore.configuration.formatter_namespace
-    end
-
-    def formatter_method_name
-      Paramore.configuration.formatter_method_name
     end
   end
 end
