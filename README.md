@@ -18,11 +18,11 @@ $ bundle
 
 # Usage
 
-<h3>Simple</h3>
+<h3>Without formatting/sanitizing</h3>
 
 ```ruby
 declare_params :item_params
-  item: [:name, :description, :price, metadata: [tags: []]]
+  item: [:name, :description, :for_sale, :price, metadata: [tags: []]]
 ```
 
 This is completely equivalent (including return type) to
@@ -31,11 +31,11 @@ This is completely equivalent (including return type) to
 def item_params
   @item_params ||= params
     .require(:item)
-    .permit(:name, :description, :price, metadata: [tags: []])
+    .permit(:name, :description, :for_sale, :price, metadata: [tags: []])
 end
 ```
 
-<h3>Extended</h3>
+<h3>With formatting/sanitizing</h3>
 
 A common problem in app development is untrustworthy input given by clients.
 That input needs to be sanitized and potentially formatted and type-cast for further processing.
@@ -52,6 +52,7 @@ def item_params
 
     _params[:name] = _params[:name].strip.squeeze(' ') if _params[:name]
     _params[:description] = _params[:description].strip.squeeze(' ') if _params[:description]
+    _params[:for_sale] = _params[:for_sale].in?('t', 'true', '1') if _params[:for_sale]
     _params[:price] = _params[:price].to_d if _params[:price]
     if _params.dig(:metadata, :tags)
       _params[:metadata][:tags] =
@@ -74,6 +75,7 @@ declare_params :item_params
   format: {
     name: :Text,
     description: :Text,
+    for_sale: :Boolean,
     price: :Decimal,
     metadata: {
       tags: :ItemTags
@@ -86,8 +88,20 @@ declare_params :item_params
 
 module Formatter::Text
   module_function
-  def run(text)
-    text.strip.squeeze(' ')
+  def run(input)
+    input.strip.squeeze(' ')
+  end
+end
+```
+```ruby
+# app/formatter/boolean.rb
+
+module Formatter::Boolean
+  TRUTHY_TEXT_VALUES = %w[t true 1]
+
+  module_function
+  def run(input)
+    input.in?(TRUTHY_TEXT_VALUES)
   end
 end
 ```
@@ -96,8 +110,8 @@ end
 
 module Formatter::Decimal
   module_function
-  def run(string)
-    string.to_d
+  def run(input)
+    input.to_d
   end
 end
 ```
@@ -106,17 +120,45 @@ end
 
 module Formatter::ItemTags
   module_function
-  def run(array)
-    array.map { |tag_id| Item.tags[tag_id.to_i] }
+  def run(input)
+    input.map { |tag_id| Item.tags[tag_id.to_i] }
   end
 end
 ```
 
-Paramore does not limit you to its own API - calling `item_params` will return an instance of
-`ActionController::Parameters` with all of the declared parameters permitted and formatted (where applicable).
 
-Formatters are modules/classes, which are recognized by a naming convention: `Formatter::<custom_name>`
-and must respond to `#run`, taking just one argument - the parameter.
+Now, given `params` are:
+```ruby
+<ActionController::Parameters {
+  "unpermitted"=>"parameter",
+  "name"=>"Shoe  \n",
+  "description"=>"Black,  with laces",
+  "for_sale"=>"true",
+  "price"=>"39.99",
+  "metadata"=><ActionController::Parameters { "tags"=>["38", "112"] } permitted: false>
+} permitted: false>
+```
+Calling `item_params` will return:
+```ruby
+<ActionController::Parameters {
+  "name"=>"Shoe",
+  "description"=>"Black, with laces",
+  "for_sale"=>true,
+  "price"=>39.99,
+  "metadata"=><ActionController::Parameters { "tags"=>[:shoe, :new] } permitted: true>
+} permitted: true>
+```
+
+This is useful when the values are not used with Rails models, but are passed to simple functions for processing.
+The formatters can also be easily reused anywhere in the app,
+since they are completely decoupled from Rails.
+
+<h3>Configuration</h3>
+
+Running `$ paramore` will generate a configuration file located in `config/initializers/paramore.rb`.
+- `config.formatter_namespace` - default is `Formatter`. Set to `nil` to have top level named formatters
+  (this also allows specifying the formatter object itself, eg.: `name: Formatter::Text`).
+- `config.formatter_method_name` - default is `run`. Don't set to `nil` :D
 
 <h3>Safety</h3>
 
@@ -124,12 +166,6 @@ and must respond to `#run`, taking just one argument - the parameter.
   - Formatters are validated - all given formatter names must match actual modules/classes defined in the app
     and must respond to the configured `formatter_method_name`.
     This means that all used formatters are loaded when the controller is loaded.
-
-<h3>Configuration</h3>
-
-Running `$ paramore` will generate a configuration file located in `config/initializers/paramore.rb`.
-- `config.formatter_namespace` - default is `Formatter`. Set to `nil` to have top level named formatters.
-- `config.formatter_method_name` - default is `run`. Don't set to `nil` :D
 
 # License
 
