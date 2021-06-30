@@ -73,12 +73,12 @@ The next logical step is extracting those procedures - this is where Paramore st
 declare_params :item_params
   item: [:name, :description, :for_sale, :price, metadata: [tags: []]],
   format: {
-    name: :Text,
-    description: :Text,
-    for_sale: :Boolean,
-    price: :Decimal,
+    name: Types::Text,
+    description: Types::Text,
+    for_sale: Types::Boolean,
+    price: Types::Decimal,
     metadata: {
-      tags: :ItemTags
+      tags: Types::ItemTags
     }
   }
 ```
@@ -88,7 +88,7 @@ declare_params :item_params
 
 module Types::Text
   module_function
-  def run(input)
+  def [](input)
     input.strip.squeeze(' ')
   end
 end
@@ -100,7 +100,7 @@ module Types::Boolean
   TRUTHY_TEXT_VALUES = %w[t true 1]
 
   module_function
-  def run(input)
+  def [](input)
     input.in?(TRUTHY_TEXT_VALUES)
   end
 end
@@ -110,7 +110,7 @@ end
 
 module Types::Decimal
   module_function
-  def run(input)
+  def [](input)
     input.to_d
   end
 end
@@ -120,7 +120,7 @@ end
 
 module Types::ItemTags
   module_function
-  def run(input)
+  def [](input)
     input.map { |tag_id| Item.tags[tag_id.to_i] }
   end
 end
