@@ -7,7 +7,7 @@ RSpec.describe Paramore::CastParameters, '.run' do
       name: "some name \n",
       metadata: {
         email: 'email@example.com ',
-        tags: ['1', '2'],
+        tags: ['1', '2', nil],
         deeper: {
           depth: '2'
         },
@@ -36,13 +36,53 @@ RSpec.describe Paramore::CastParameters, '.run' do
         name: 'some name',
         metadata: {
           email: 'email@example.com',
-          tags: [1, 2],
+          tags: [1, 2, nil],
           deeper: {
             depth: 2
           },
         },
       },
     )
+  end
+
+  context 'when keeping empty input in arrays' do
+    let(:types_definition) do
+      {
+        metadata: Paratype[{
+          tags: Paratype[[Types::Int], empty: true],
+        }],
+      }
+    end
+
+    it 'casts nil to int' do
+      expect(subject).to eq(
+        {
+          metadata: {
+            tags: [1, 2, 0],
+          },
+        },
+      )
+    end
+  end
+
+  context 'when compacting arrays' do
+    let(:types_definition) do
+      {
+        metadata: Paratype[{
+          tags: Paratype[[Types::Int], compact: true],
+        }],
+      }
+    end
+
+    it 'casts nil to int' do
+      expect(subject).to eq(
+        {
+          metadata: {
+            tags: [1, 2],
+          },
+        },
+      )
+    end
   end
 
   context 'with nil parameters' do
@@ -83,7 +123,7 @@ RSpec.describe Paramore::CastParameters, '.run' do
       it 'raises error' do
         expect(Types::Int).not_to receive(:[])
         expect { subject }.to raise_error(
-          an_instance_of(Paramore::NilParameterError).and having_attributes(
+          an_instance_of(Paramore::NilParameter).and having_attributes(
             message: a_string_including('`id`')
           )
         )
@@ -102,7 +142,7 @@ RSpec.describe Paramore::CastParameters, '.run' do
       it 'raises error' do
         expect(Types::Int).not_to receive(:[])
         expect { subject }.to raise_error(
-          an_instance_of(Paramore::NilParameterError).and having_attributes(
+          an_instance_of(Paramore::NilParameter).and having_attributes(
             message: a_string_including('`ary`')
           )
         )
@@ -123,7 +163,7 @@ RSpec.describe Paramore::CastParameters, '.run' do
       it 'raises error' do
         expect(Types::Text).not_to receive(:[])
         expect { subject }.to raise_error(
-          an_instance_of(Paramore::NilParameterError).and having_attributes(
+          an_instance_of(Paramore::NilParameter).and having_attributes(
             message: a_string_including('`metadata`')
           )
         )

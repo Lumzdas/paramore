@@ -29,7 +29,7 @@ module Paramore
           if definition.nullable?
             next { param_name => nil }
           else
-            raise Paramore::NilParameterError, param_name
+            raise Paramore::NilParameter, param_name
           end
         end
 
@@ -42,10 +42,20 @@ module Paramore
       when Hash
         recursive_typecast(definition.type, value || {})
       when Array
-        value.map { |unit| typecast_value(definition.type.first, unit) }
+        typecast_array(definition, value)
       else
         typecast_value(definition.type, value)
       end
+    end
+
+    def typecast_array(definition, array)
+      array
+        .reject { |unit| unit.to_s == '' && definition.compact? }
+        .map do |unit|
+          if unit.to_s != '' || definition.use_empty_strings?
+            typecast_value(definition.type.first, unit)
+          end
+        end
     end
 
     def typecast_value(type, value)

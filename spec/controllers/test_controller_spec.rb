@@ -7,7 +7,7 @@ RSpec.describe TestController, 'parameter typecasting', type: :controller do
         nested: {
           email: 'seeyou@cow.boy ',
           deeper: {
-            depths: ['0.0', '-15', '3000.1']
+            depths: ['0.0', '-15', '3000.1', nil]
           }
         },
         unpermitted: 'param'
@@ -22,7 +22,7 @@ RSpec.describe TestController, 'parameter typecasting', type: :controller do
       'nested' => {
         'email' => 'seeyou@cow.boy',
         'deeper' => {
-          'depths' => [0.0, -15.0, 3000.1]
+          'depths' => [0.0, -15.0, 3000.1, nil]
         }
       }
     )
@@ -38,7 +38,7 @@ RSpec.describe TestController, 'parameter typecasting', type: :controller do
         'nested' => {
           'email' => 'seeyou@cow.boy ',
           'deeper' => {
-            'depths' => ['0.0', '-15', '3000.1']
+            'depths' => ['0.0', '-15', '3000.1', '']
           }
         }
       )

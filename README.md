@@ -68,6 +68,7 @@ The next logical step is extracting those procedures - this is where Paramore st
 
 ```ruby
 # app/controllers/items_controller.rb
+
 class ItemsController < ApplicationController
   def create
     Item.create(item_params)
@@ -76,19 +77,19 @@ class ItemsController < ApplicationController
   paramorize :item_params,
     item: {
       name: Paratype[Paramore::SanitizedString],
-      description: Paratype[Paramore::StrippedString],
+      description: Paratype[Paramore::StrippedString, null: true],
       for_sale: Paratype[Paramore::Boolean],
       price: Paratype[Paramore::Decimal],
       metadata: Paratype[{
-        tags: Paratype[[Types::ItemTag]]
+        tags: Paratype[[Types::ItemTag], compact: true]
       }]
     }
 end
 ```
 
-`Types::ItemTags` could be your own type:
+`Types::ItemTag` could be your own type:
 ```ruby
-# app/types/item_tags.rb
+# app/types/item_tag.rb
 
 module Types::ItemTag
   module_function
@@ -125,23 +126,26 @@ The types can also be easily reused anywhere in the app, since they are complete
 
 Notice that the `Paramore::StrippedString` does not perform `.squeeze(' ')`, only `Paramore::SanitizedString` does.
 
-<h3>nil<h3>
+<h3>nil</h3>
 
-No nil will ever reach any of the type classes - if some parameter is nullable, the class will not be called.
-If a parameter is non-nullable, then a `Paramore::NilParameterError` will be raised before calling the class.
-If a, say `item_ids` array is non-nullable, but the received parameter is `['1', nil, '3']`, only the `'1'`
-and `'2'` will get passed to type classes, and the resulting array will contain the nil.
+Types are non-nullable by default and raise exceptions if the param hash misses any.
+This can be disabled for any type by declaring `Paratype[Paramore::Int, null: true]`.
+
+nils will usually not reach any of the type classes - if some parameter is nullable, the class will not be called.
+If a parameter is non-nullable, then a `Paramore::NilParameter` error will be raised before calling the class.
+If a, say, `item_ids` array is non-nullable, but the received parameter is `['1', '', '3']`, only the `'1'` and `'2'` will get passed to type classes, and the resulting array will contain a nil, eg.: `['1', nil, '3']`.
+nils inside arrays can still be passed to type classes by declaring `Paratype[[Paramore::Int], empty: true]`.
+If you wish to get rid of empty array elements, declare `Paratype[Paramore::Int, compact: true]`.
 
 <h3>Configuration</h3>
 
 Running `$ paramore` will generate a configuration file located in `config/initializers/paramore.rb`.
-- `config.type_method_name` - default is `[]`, to allow using, for example, `SuperString["foo"]` syntax.
+- `config.type_method_name` - default is `[]`, to allow using, for example, `SuperString["foo"]` syntax. Note that changing this value will preclude you from using built in types.
 
 <h3>Safety</h3>
 
   - Types will not be called if their parameter is missing (no key in the param hash)
-  - All given types must respond to the configured `type_method_name` and an error will be raised
-    if they don't when controllers are loaded.
+  - All given types must respond to the configured `type_method_name` and an error will be raised when controllers are loaded if they don't.
 
 # License
 

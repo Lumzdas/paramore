@@ -15,7 +15,7 @@ module Paramore
     def types(types_definition)
       types_definition.flat_map do |param_name, paratype|
         unless paratype.is_a?(Paratype)
-          raise Paramore::NonParatypeError.new(param_name, paratype)
+          raise Paramore::NonParatype.new(param_name, paratype)
         end
 
         paratype.type.is_a?(Hash) ? types(paratype.type) : paratype.type

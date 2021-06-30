@@ -40,8 +40,8 @@ RSpec.describe Paramore::Validate, '.run' do
 
     it 'raises' do
       expect { subject }.to raise_error(
-        Paramore::NonParatypeError,
-        '`extra` defined as a `Hash`, expected `Paratype`! Perhaps you tried making a hash instead of Paratype[{}]?'
+        Paramore::NonParatype,
+        '`extra` defined as a `Hash`, expected `Paratype`! Perhaps you declared a plain hash instead of Paratype[{}]?'
       )
     end
   end
