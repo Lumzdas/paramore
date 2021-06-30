@@ -11,29 +11,18 @@ module Paramore
 
       return unless format_definition
 
-      formatter_names(format_definition).each do |formatter_name|
-        formatter =
-          begin
-            Paramore::Format.formatter_for(formatter_name)
-          rescue NameError => e
-            raise NameError, "Paramore: formatter `#{formatter_name}` is undefined! #{e}"
-          end
-
-          unless formatter.respond_to?(Paramore.configuration.formatter_method_name)
+      types(format_definition).each do |type|
+          unless type.respond_to?(Paramore.configuration.type_method_name)
             raise NoMethodError,
-              "Paramore: formatter `#{formatter_name}` does not respond to " +
-              "`#{Paramore.configuration.formatter_method_name}`!"
+              "Paramore: type `#{type}` does not respond to " +
+              "`#{Paramore.configuration.type_method_name}`!"
           end
       end
     end
 
-    def formatter_names(format_definition)
-      format_definition.flat_map do |_, value|
-        if value.kind_of?(Hash)
-          formatter_names(value)
-        else
-          value
-        end
+    def types(format_definition)
+      format_definition.flat_map do |_, type|
+        type.kind_of?(Hash) ?  types(type) : type
       end.uniq
     end
   end

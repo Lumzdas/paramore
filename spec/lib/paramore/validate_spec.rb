@@ -36,30 +36,19 @@ RSpec.describe Paramore::Validate, '.run' do
   end
 
   context 'with format_definition' do
-    let(:format_definition) { { id: :Int, metadata: { tags: :IntArray } } }
+    let(:format_definition) { { id: Types::Int, metadata: { tags: :IntArray } } }
 
     it 'does not raise' do
       expect { subject }.not_to raise_error
     end
 
-    context 'with undefined formatter, which is incidentally a standard class' do
-      let(:format_definition) { { id: :Float } }
-
-      it 'does not resolve to standard class' do
-        expect { subject }.to raise_error(
-          NameError,
-          'Paramore: formatter `Float` is undefined! uninitialized constant Formatter::Float'
-        )
-      end
-    end
-
     context 'with miswritten method name' do
-      let(:format_definition) { { id: :Typo } }
+      let(:format_definition) { { id: Types::Typo } }
 
       it 'raises' do
         expect { subject }.to raise_error(
           NoMethodError,
-          'Paramore: formatter `Typo` does not respond to `run`!'
+          'Paramore: type `Types::Typo` does not respond to `[]`!'
         )
       end
     end

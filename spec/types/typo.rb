@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Formatter
+module Types
   module Typo
     module_function
     def rum(input)

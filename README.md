@@ -18,7 +18,7 @@ $ bundle
 
 # Usage
 
-<h3>Without formatting/sanitizing</h3>
+<h3>Without typing/sanitizing</h3>
 
 ```ruby
 declare_params :item_params
@@ -35,7 +35,7 @@ def item_params
 end
 ```
 
-<h3>With formatting/sanitizing</h3>
+<h3>With typing/sanitizing</h3>
 
 A common problem in app development is untrustworthy input given by clients.
 That input needs to be sanitized and potentially formatted and type-cast for further processing.
@@ -84,9 +84,9 @@ declare_params :item_params
 ```
 
 ```ruby
-# app/formatter/text.rb
+# app/types/text.rb
 
-module Formatter::Text
+module Types::Text
   module_function
   def run(input)
     input.strip.squeeze(' ')
@@ -94,9 +94,9 @@ module Formatter::Text
 end
 ```
 ```ruby
-# app/formatter/boolean.rb
+# app/types/boolean.rb
 
-module Formatter::Boolean
+module Types::Boolean
   TRUTHY_TEXT_VALUES = %w[t true 1]
 
   module_function
@@ -106,9 +106,9 @@ module Formatter::Boolean
 end
 ```
 ```ruby
-# app/formatter/decimal.rb
+# app/types/decimal.rb
 
-module Formatter::Decimal
+module Types::Decimal
   module_function
   def run(input)
     input.to_d
@@ -116,9 +116,9 @@ module Formatter::Decimal
 end
 ```
 ```ruby
-# app/formatter/item_tags.rb
+# app/types/item_tags.rb
 
-module Formatter::ItemTags
+module Types::ItemTags
   module_function
   def run(input)
     input.map { |tag_id| Item.tags[tag_id.to_i] }
@@ -150,22 +150,18 @@ Calling `item_params` will return:
 ```
 
 This is useful when the values are not used with Rails models, but are passed to simple functions for processing.
-The formatters can also be easily reused anywhere in the app,
+The types can also be easily reused anywhere in the app,
 since they are completely decoupled from Rails.
 
 <h3>Configuration</h3>
 
 Running `$ paramore` will generate a configuration file located in `config/initializers/paramore.rb`.
-- `config.formatter_namespace` - default is `Formatter`. Set to `nil` to have top level named formatters
-  (this also allows specifying the formatter object itself, eg.: `name: Formatter::Text`).
-- `config.formatter_method_name` - default is `run`. Don't set to `nil` :D
+- `config.type_method_name` - default is `[]`, to allow using, for example, `SuperString["foo"]` syntax.
 
 <h3>Safety</h3>
 
-  - Formatters will not be called if their parameter is missing (no key in the param hash)
-  - Formatters are validated - all given formatter names must match actual modules/classes defined in the app
-    and must respond to the configured `formatter_method_name`.
-    This means that all used formatters are loaded when the controller is loaded.
+  - Types will not be called if their parameter is missing (no key in the param hash)
+  - All given types must respond to the configured `type_method_name`.
 
 # License
 

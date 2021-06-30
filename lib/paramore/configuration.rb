@@ -2,14 +2,12 @@
 
 module Paramore
   class Configuration
-    DEFAULT_FORMATTER_NAMESPACE = 'Formatter'
-    DEFAULT_FORMATTER_METHOD_NAME = 'run'
+    DEFAULT_TYPE_METHOD_NAME = '[]'
 
-    attr_accessor :formatter_namespace, :formatter_method_name
+    attr_accessor :type_method_name
 
     def initialize
-      @formatter_namespace = DEFAULT_FORMATTER_NAMESPACE
-      @formatter_method_name = DEFAULT_FORMATTER_METHOD_NAME
+      @type_method_name = DEFAULT_TYPE_METHOD_NAME
     end
   end
 end

@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-module Formatter
-  module Int
+module Types
+  module Text
     module_function
-    def run(input)
-      input.to_i
+    def [](input)
+      input.strip
     end
   end
 end

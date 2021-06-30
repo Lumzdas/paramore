@@ -15,12 +15,8 @@ module Paramore
         # frozen_string_literal: true
 
         Paramore.configure do |config|
-          # change this to any level you need, eg.: `'A::B'` for doubly nested formatters
-          # or `nil` for top level formatters
-          # config.formatter_namespace = 'Formatter'
-
-          # what method name to call formatters with
-          # config.formatter_method_name = 'run'
+          # what method name to call types with
+          # config.type_method_name = '[]'
         end
       CONF
 

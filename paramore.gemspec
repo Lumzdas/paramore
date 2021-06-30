@@ -5,10 +5,10 @@ version = File.read('VERSION').strip
 Gem::Specification.new do |s|
   s.name        = 'paramore'
   s.version     = version
-  s.summary     = "A declarative approach to Rails' strong parameter formatting and sanitizing"
+  s.summary     = "A declarative approach to Rails' strong parameter typing and sanitizing"
   s.description = <<~DESC
     Paramore lets you declare which parameters are permitted and what object is responsible
-    for formatting/sanitizing/type-casting them before they passed along to your models/processors.
+    for typing/sanitizing/type-casting them before they passed along to your models/processors.
     It is intended to reduce the amount of imperative code in controllers.
   DESC
 

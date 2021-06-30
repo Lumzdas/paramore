@@ -7,7 +7,7 @@ module Paramore
       return {} unless format_definition
 
       recursive_merge(
-        recursive_format(
+        recursive_typecast(
           format_definition, permitted_params
         )
       )
@@ -23,27 +23,20 @@ module Paramore
       end.reduce(:merge)
     end
 
-    def recursive_format(format_definition, permitted_params)
-      format_definition.map do |param_name, value|
+    def recursive_typecast(format_definition, permitted_params)
+      format_definition.map do |param_name, type|
         next {} unless permitted_params[param_name]
 
-        if value.kind_of?(Hash)
-          { param_name => recursive_format(value, permitted_params[param_name]) }
+        if type.kind_of?(Hash)
+          { param_name => recursive_typecast(type, permitted_params[param_name]) }
         else
-          { param_name => formatted_value(permitted_params[param_name], formatter_for(value)) }
+          { param_name => typecast_value(permitted_params[param_name], type) }
         end
       end
     end
 
-    def formatted_value(value, formatter)
-      formatter.send(Paramore.configuration.formatter_method_name, value)
-    end
-
-    def formatter_for(formatter_name)
-      Object.const_get(
-        [Paramore.configuration.formatter_namespace, formatter_name].compact.join('::'),
-        false # inherit=false - only get exact match
-      )
+    def typecast_value(value, type)
+      type.send(Paramore.configuration.type_method_name, value)
     end
   end
 end

@@ -19,16 +19,16 @@ RSpec.describe Paramore::Format, '.run' do
 
   let(:format_definition) do
     {
-      id: :Int,
-      name: :Text,
+      id: Types::Int,
+      name: Types::Text,
       metadata: {
-        email: :Text,
-        tags: :IntArray,
+        email: Types::Text,
+        tags: Types::IntArray,
         deeper: {
-          depth: :Int,
+          depth: Types::Int,
         },
         unreceived: {
-          unreceived: :Int
+          unreceived: Types::Int
         }
       },
     }
