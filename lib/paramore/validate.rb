@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Paramore
   module Validate
     module_function

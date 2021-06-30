@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Paratype
   def self.[](given_type, null: false)
     self.new(given_type, null: null)

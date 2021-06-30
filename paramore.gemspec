@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 version = File.read('VERSION').strip
 
 Gem::Specification.new do |spec|

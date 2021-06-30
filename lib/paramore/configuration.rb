@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Paramore
   class Configuration
     DEFAULT_TYPE_METHOD_NAME = :[]

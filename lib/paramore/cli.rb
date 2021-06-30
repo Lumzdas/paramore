@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Paramore
   module Cli
     module_function
@@ -12,8 +10,6 @@ module Paramore
       end
 
       File.write(config_file_path, <<~CONF)
-        # frozen_string_literal: true
-
         Paramore.configure do |config|
           # what method name to call types with
           # config.type_method_name = :[]

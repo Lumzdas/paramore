@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 RSpec.describe Paramore::Validate, '.run' do
   subject { described_class.run(types_definition) }
 
