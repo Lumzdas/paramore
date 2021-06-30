@@ -1,56 +1,50 @@
 # frozen_string_literal: true
 
 RSpec.describe Paramore::Validate, '.run' do
-  subject { described_class.run(param_definition, format_definition) }
+  subject { described_class.run(types_definition) }
 
-  let(:param_definition) { { item: [:id, :name, metadata: [tags: []]] } }
+  let(:types_definition) do
+    {
+      id: Paratype[Types::Int],
+      metadata: Paratype[{
+        tags: Paratype[[Types::Int]]
+      }]
+    }
+  end
 
-  context 'without format_definition' do
-    let(:format_definition) { nil }
+  it 'does not raise' do
+    expect { subject }.not_to raise_error
+  end
 
-    it 'does not raise' do
-      expect { subject }.not_to raise_error
+  context 'with miswritten method name' do
+    let(:types_definition) do
+      {
+        id: Paratype[Types::Typo]
+      }
     end
 
-    context 'and empty param_definition' do
-      let(:param_definition) { {} }
-
-      it 'raises' do
-        expect { subject }.to raise_error(
-          ArgumentError,
-          'Paramore: exactly one required attribute allowed! Given: []'
-        )
-      end
-    end
-
-    context 'and excessive param_definition' do
-      let(:param_definition) { { item: [:id], user: [:id] } }
-
-      it 'raises' do
-        expect { subject }.to raise_error(
-          ArgumentError,
-          'Paramore: exactly one required attribute allowed! Given: [:item, :user]'
-        )
-      end
+    it 'raises' do
+      expect { subject }.to raise_error(
+        NoMethodError,
+        'Paramore: type `Types::Typo` does not respond to `[]`!'
+      )
     end
   end
 
-  context 'with format_definition' do
-    let(:format_definition) { { id: Types::Int, metadata: { tags: :IntArray } } }
-
-    it 'does not raise' do
-      expect { subject }.not_to raise_error
+  context 'with hash instead of Paratype[{}]' do
+    let(:types_definition) do
+      {
+        extra: {
+          email: Paratype[Types::Text]
+        }
+      }
     end
 
-    context 'with miswritten method name' do
-      let(:format_definition) { { id: Types::Typo } }
-
-      it 'raises' do
-        expect { subject }.to raise_error(
-          NoMethodError,
-          'Paramore: type `Types::Typo` does not respond to `[]`!'
-        )
-      end
+    it 'raises' do
+      expect { subject }.to raise_error(
+        Paramore::NonParatypeError,
+        '`extra` defined as a `Hash`, expected `Paratype`! Perhaps you tried making a hash instead of Paratype[{}]?'
+      )
     end
   end
 end

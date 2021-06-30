@@ -2,6 +2,8 @@
 
 require_relative 'paramore/configuration'
 require_relative 'paramore/railtie'
+require_relative 'paramore/types'
+require_relative 'paratype'
 
 module Paramore
   class << self

@@ -16,7 +16,7 @@ module Paramore
 
         Paramore.configure do |config|
           # what method name to call types with
-          # config.type_method_name = '[]'
+          # config.type_method_name = :[]
         end
       CONF
 

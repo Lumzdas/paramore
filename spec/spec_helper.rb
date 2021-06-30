@@ -3,10 +3,14 @@
 require 'bundler/setup'
 Bundler.setup
 
+require 'combustion'
+Combustion.initialize! :action_controller
+
+require 'rspec/rails'
+
 require_relative '../lib/paramore'
 
 require_relative 'types/int'
-require_relative 'types/int_array'
 require_relative 'types/text'
 require_relative 'types/typo'
 

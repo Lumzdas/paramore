@@ -2,7 +2,7 @@
 
 module Paramore
   class Configuration
-    DEFAULT_TYPE_METHOD_NAME = '[]'
+    DEFAULT_TYPE_METHOD_NAME = :[]
 
     attr_accessor :type_method_name
 
