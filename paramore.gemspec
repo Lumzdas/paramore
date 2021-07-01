@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.summary     = "A declarative approach to Rails' strong parameter typing and sanitizing"
   spec.description = <<~DESC
     Paramore lets you declare which parameters are permitted and what object is responsible
-    for typing/sanitizing/type-casting them before they passed along to your models/processors.
+    for typing/sanitizing/type-casting them before they are passed along to your models/domain.
     It is intended to reduce the amount of imperative code in controllers.
   DESC
 
