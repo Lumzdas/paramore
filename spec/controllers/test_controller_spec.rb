@@ -46,4 +46,19 @@ RSpec.describe TestController, 'parameter typecasting', type: :controller do
       get :untyped, params: params
     end
   end
+
+  context 'no parameters reach the controller' do
+    let(:params) { {} }
+
+    it 'raises error' do
+      expect { get :typed, params: params }.to raise_error(ActionController::ParameterMissing)
+    end
+
+    context 'and default is set' do
+      it 'does not raise error' do
+        expect(ParameterInspector).to receive(:for).with({})
+        get :default, params: params
+      end
+    end
+  end
 end

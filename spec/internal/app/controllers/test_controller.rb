@@ -3,7 +3,8 @@ class ParameterInspector
 end
 
 class TestController < ActionController::Base
-  paramorize :typed_params,
+  paramorize(
+    :typed_params,
     test: {
       id: Paratype[Paramore::Int, null: false],
       name: Paratype[Paramore::StrippedString],
@@ -14,9 +15,18 @@ class TestController < ActionController::Base
         }]
       }]
     }
+  )
 
-  paramorize :untyped_params,
+  paramorize(
+    :untyped_params,
     test: [:id, :name, nested: [:email, deeper: [depths: []]]]
+  )
+
+  paramorize(
+    :with_default,
+    test: [:id, :name, nested: [:email, deeper: [depths: []]]],
+    default: {},
+  )
 
   def typed
     ParameterInspector.for(typed_params)
@@ -25,6 +35,11 @@ class TestController < ActionController::Base
 
   def untyped
     ParameterInspector.for(untyped_params)
+    head 200 and return
+  end
+
+  def default
+    ParameterInspector.for(with_default)
     head 200 and return
   end
 end
