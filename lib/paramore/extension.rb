@@ -6,7 +6,6 @@ module Paramore
   module Extension
     OPTIONS = %i[
       default
-      helper_method
     ].freeze
 
     def paramorize(accessor_name, configuration)
@@ -28,8 +27,6 @@ module Paramore
         else
           types_definition
         end
-
-      helper_method(accessor_name) if configuration[:helper_method]
 
       define_method(accessor_name) do |rails_parameters = params|
         return instance_variable_get("@#{accessor_name}") if instance_variable_defined?("@#{accessor_name}")
