@@ -3,10 +3,10 @@ RSpec.describe Paramore::Validate, '.run' do
 
   let(:types_definition) do
     {
-      id: Paratype[Types::Int],
-      metadata: Paratype[{
-        tags: Paratype[[Types::Int]]
-      }]
+      id: Paramore.field(Types::Int),
+      metadata: Paramore.field({
+        tags: Paramore.field([Types::Int]),
+      }),
     }
   end
 
@@ -17,7 +17,7 @@ RSpec.describe Paramore::Validate, '.run' do
   context 'with miswritten method name' do
     let(:types_definition) do
       {
-        id: Paratype[Types::Typo]
+        id: Paramore.field(Types::Typo),
       }
     end
 
@@ -29,19 +29,19 @@ RSpec.describe Paramore::Validate, '.run' do
     end
   end
 
-  context 'with hash instead of Paratype[{}]' do
+  context 'with hash instead of Paramore.field({})' do
     let(:types_definition) do
       {
         extra: {
-          email: Paratype[Types::Text]
+          email: Paramore.field(Types::Text)
         }
       }
     end
 
     it 'raises' do
       expect { subject }.to raise_error(
-        Paramore::NonParatype,
-        '`extra` defined as a `Hash`, expected `Paratype`! Perhaps you declared a plain hash instead of Paratype[{}]?'
+        Paramore::NonFieldSchema,
+        '`extra` defined as a `Hash`, expected a call of `Paramore.field()`! Perhaps you declared a plain hash instead of Paramore.field({})?'
       )
     end
   end

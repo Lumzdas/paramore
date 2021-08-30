@@ -8,7 +8,7 @@ module Paramore
           case definition
           when Hash
             { key => merge_hashes(parse(definition)) }
-          when Paratype
+          when Paramore::FieldSchema
             case definition.type
             when Array
               { key => [] }

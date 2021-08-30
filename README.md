@@ -1,7 +1,7 @@
 # Paramore
 
-Paramore is a small gem intended to make strong parameter definitions declarative
-and provide a unified way to typecast and sanitize their values outside of controllers.
+Paramore allows you to declare a typed schema for your params,
+so that any downstream code can work with the data it expects.
 
 # Installation
 
@@ -20,7 +20,7 @@ $ bundle
 <h3>Without typing</h3>
 
 ```ruby
-paramorize :item_params,
+param_schema :item_params,
   item: [:name, :description, :for_sale, :price, metadata: [tags: []]]
 ```
 
@@ -74,15 +74,15 @@ class ItemsController < ApplicationController
     Item.create(item_params)
   end
 
-  paramorize :item_params,
+  param_schema :item_params,
     item: {
-      name: Paratype[Paramore::SanitizedString],
-      description: Paratype[Paramore::StrippedString, null: true],
-      for_sale: Paratype[Paramore::Boolean],
-      price: Paratype[Paramore::Decimal],
-      metadata: Paratype[{
-        tags: Paratype[[Types::ItemTag], compact: true]
-      }]
+      name: Paramore.field(Paramore::SanitizedString),
+      description: Paramore.field(Paramore::StrippedString, null: true),
+      for_sale: Paramore.field(Paramore::Boolean),
+      price: Paramore.field(Paramore::Decimal),
+      metadata: Paramore.field({
+        tags: Paramore.field([Types::ItemTag], compact: true)
+      })
     }
 end
 ```
@@ -129,13 +129,13 @@ Notice that the `Paramore::StrippedString` does not perform `.squeeze(' ')`, onl
 <h3>nil</h3>
 
 Types are non-nullable by default and raise exceptions if the param hash misses any.
-This can be disabled for any type by declaring `Paratype[Paramore::Int, null: true]`.
+This can be disabled for any type by declaring `Paramore.field(Paramore::Int, null: true)`.
 
 nils will usually not reach any of the type classes - if some parameter is nullable, the class will not be called.
 If a parameter is non-nullable, then a `Paramore::NilParameter` error will be raised before calling the class.
 If a, say, `item_ids` array is non-nullable, but the received parameter is `['1', '', '3']`, only the `'1'` and `'2'` will get passed to type classes, and the resulting array will contain a nil, eg.: `['1', nil, '3']`.
-nils inside arrays can still be passed to type classes by declaring `Paratype[[Paramore::Int], empty: true]`.
-If you wish to get rid of empty array elements, declare `Paratype[Paramore::Int, compact: true]`.
+nils inside arrays can still be passed to type classes by declaring `Paramore.field([Paramore::Int], empty: true)`.
+If you wish to get rid of empty array elements, declare `Paramore.field(Paramore::Int, compact: true)`.
 
 <h3>Configuration</h3>
 

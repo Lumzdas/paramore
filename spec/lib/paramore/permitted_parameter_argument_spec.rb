@@ -3,18 +3,18 @@ RSpec.describe Paramore::PermittedParameterArgument, '.parse' do
 
   let(:types_definition) do
     {
-      id: Paratype[Types::Int],
-      name: Paratype[Types::Text],
-      metadata: Paratype[{
-        email: Paratype[Types::Text],
-        tags: Paratype[[Types::Int]],
-        deeper: {
-          depth: Paratype[Types::Int],
-        },
-      }],
-      extra: Paratype[{
-        parameter: Paratype[Types::Int]
-      }],
+      id: Paramore.field(Types::Int),
+      name: Paramore.field(Types::Text),
+      metadata: Paramore.field({
+        email: Paramore.field(Types::Text),
+        tags: Paramore.field([Types::Int]),
+        deeper: Paramore.field({
+          depth: Paramore.field(Types::Int),
+        }),
+      }),
+      extra: Paramore.field({
+        parameter: Paramore.field(Types::Int),
+      }),
     }
   end
 

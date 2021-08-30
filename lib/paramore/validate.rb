@@ -13,12 +13,12 @@ module Paramore
     end
 
     def types(types_definition)
-      types_definition.flat_map do |param_name, paratype|
-        unless paratype.is_a?(Paratype)
-          raise Paramore::NonParatype.new(param_name, paratype)
+      types_definition.flat_map do |param_name, field_schema|
+        unless field_schema.is_a?(Paramore::FieldSchema)
+          raise Paramore::NonFieldSchema.new(param_name, field_schema)
         end
 
-        paratype.type.is_a?(Hash) ? types(paratype.type) : paratype.type
+        field_schema.type.is_a?(Hash) ? types(field_schema.type) : field_schema.type
       end.uniq
     end
   end

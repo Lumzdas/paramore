@@ -3,26 +3,26 @@ class ParameterInspector
 end
 
 class TestController < ActionController::Base
-  paramorize(
+  param_schema(
     :typed_params,
     test: {
-      id: Paratype[Paramore::Int, null: false],
-      name: Paratype[Paramore::StrippedString],
-      nested: Paratype[{
-        email: Paratype[Paramore::SanitizedString],
-        deeper: Paratype[{
-          depths: Paratype[[Paramore::Float]]
-        }]
-      }]
+      id: Paramore.field(Paramore::Int, null: false),
+      name: Paramore.field(Paramore::StrippedString),
+      nested: Paramore.field({
+        email: Paramore.field(Paramore::SanitizedString),
+        deeper: Paramore.field({
+          depths: Paramore.field([Paramore::Float])
+        })
+      })
     }
   )
 
-  paramorize(
+  param_schema(
     :untyped_params,
     test: [:id, :name, nested: [:email, deeper: [depths: []]]]
   )
 
-  paramorize(
+  param_schema(
     :with_default,
     test: [:id, :name, nested: [:email, deeper: [depths: []]]],
     default: {},

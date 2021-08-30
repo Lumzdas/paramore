@@ -17,15 +17,15 @@ RSpec.describe Paramore::CastParameters, '.run' do
 
   let(:types_definition) do
     {
-      id: Paratype[Types::Int],
-      name: Paratype[Types::Text],
-      metadata: Paratype[{
-        email: Paratype[Types::Text],
-        tags: Paratype[[Types::Int]],
-        deeper: Paratype[{
-          depth: Paratype[Types::Int],
-        }],
-      }],
+      id: Paramore.field(Types::Int),
+      name: Paramore.field(Types::Text),
+      metadata: Paramore.field({
+        email: Paramore.field(Types::Text),
+        tags: Paramore.field([Types::Int]),
+        deeper: Paramore.field({
+          depth: Paramore.field(Types::Int),
+        }),
+      }),
     }
   end
 
@@ -48,9 +48,9 @@ RSpec.describe Paramore::CastParameters, '.run' do
   context 'when keeping empty input in arrays' do
     let(:types_definition) do
       {
-        metadata: Paratype[{
-          tags: Paratype[[Types::Int], empty: true],
-        }],
+        metadata: Paramore.field({
+          tags: Paramore.field([Types::Int], empty: true),
+        }),
       }
     end
 
@@ -68,9 +68,9 @@ RSpec.describe Paramore::CastParameters, '.run' do
   context 'when compacting arrays' do
     let(:types_definition) do
       {
-        metadata: Paratype[{
-          tags: Paratype[[Types::Int], compact: true],
-        }],
+        metadata: Paramore.field({
+          tags: Paramore.field([Types::Int], compact: true),
+        }),
       }
     end
 
@@ -91,10 +91,10 @@ RSpec.describe Paramore::CastParameters, '.run' do
     context 'and nullable types' do
       let(:types_definition) do
         {
-          id: Paratype[Types::Int, null: true],
-          metadata: Paratype[{
-            email: Paratype[Types::Text, null: true],
-          }, null: true]
+          id: Paramore.field(Types::Int, null: true),
+          metadata: Paramore.field({
+            email: Paramore.field(Types::Text, null: true),
+          }, null: true),
         }
       end
 
@@ -116,7 +116,7 @@ RSpec.describe Paramore::CastParameters, '.run' do
 
       let(:types_definition) do
         {
-          id: Paratype[Types::Int],
+          id: Paramore.field(Types::Int),
         }
       end
 
@@ -135,7 +135,7 @@ RSpec.describe Paramore::CastParameters, '.run' do
 
       let(:types_definition) do
         {
-          ary: Paratype[[Types::Int]]
+          ary: Paramore.field([Types::Int]),
         }
       end
 
@@ -154,9 +154,9 @@ RSpec.describe Paramore::CastParameters, '.run' do
 
       let(:types_definition) do
         {
-          metadata: Paratype[{
-            email: Paratype[Types::Text],
-          }]
+          metadata: Paramore.field({
+            email: Paramore.field(Types::Text),
+          }),
         }
       end
 

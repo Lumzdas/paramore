@@ -8,7 +8,7 @@ module Paramore
       default
     ].freeze
 
-    def paramorize(accessor_name, configuration)
+    def param_schema(accessor_name, configuration)
       parameter_configuration = configuration.except(*OPTIONS)
 
       unless parameter_configuration.keys.size == 1
