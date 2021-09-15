@@ -2,22 +2,26 @@ module Paramore
   module PermittedParameterArgument
     module_function
 
-    def parse(types_definition)
+    def parse(field)
+      parse_type(field.type)
+    end
+
+    def parse_type(type)
       merge_hashes(
-        types_definition.map do |key, definition|
-          case definition
-          when Hash
-            { key => merge_hashes(parse(definition)) }
-          when Paramore::FieldSchema
-            case definition.type
-            when Array
-              { key => [] }
-            when Hash
-              { key => merge_hashes(parse(definition.type)) }
+        case type
+        when Array
+          parse_type(type.first)
+        when Hash
+          type.map do |name, field|
+            case field.type
+            when Array, Hash
+              { name => parse_type(field.type) }
             else
-              key
+              name
             end
           end
+        else
+          []
         end
       )
     end

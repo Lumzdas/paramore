@@ -16,7 +16,7 @@ RSpec.describe Paramore::CastParameters, '.run' do
   end
 
   let(:types_definition) do
-    {
+    Paramore.field({
       id: Paramore.field(Types::Int),
       name: Paramore.field(Types::Text),
       metadata: Paramore.field({
@@ -26,7 +26,7 @@ RSpec.describe Paramore::CastParameters, '.run' do
           depth: Paramore.field(Types::Int),
         }),
       }),
-    }
+    })
   end
 
   it 'type casts the parameters' do
@@ -36,7 +36,7 @@ RSpec.describe Paramore::CastParameters, '.run' do
         name: 'some name',
         metadata: {
           email: 'email@example.com',
-          tags: [1, 2, nil],
+          tags: [1, 2, 0],
           deeper: {
             depth: 2
           },
@@ -45,33 +45,13 @@ RSpec.describe Paramore::CastParameters, '.run' do
     )
   end
 
-  context 'when keeping empty input in arrays' do
-    let(:types_definition) do
-      {
-        metadata: Paramore.field({
-          tags: Paramore.field([Types::Int], empty: true),
-        }),
-      }
-    end
-
-    it 'casts nil to int' do
-      expect(subject).to eq(
-        {
-          metadata: {
-            tags: [1, 2, 0],
-          },
-        },
-      )
-    end
-  end
-
   context 'when compacting arrays' do
     let(:types_definition) do
-      {
+      Paramore.field({
         metadata: Paramore.field({
           tags: Paramore.field([Types::Int], compact: true),
         }),
-      }
+      })
     end
 
     it 'casts nil to int' do
@@ -90,12 +70,12 @@ RSpec.describe Paramore::CastParameters, '.run' do
 
     context 'and nullable types' do
       let(:types_definition) do
-        {
+        Paramore.field({
           id: Paramore.field(Types::Int, null: true),
           metadata: Paramore.field({
             email: Paramore.field(Types::Text, null: true),
           }, null: true),
-        }
+        })
       end
 
       it 'does not call any of the type classes' do
@@ -115,9 +95,9 @@ RSpec.describe Paramore::CastParameters, '.run' do
       let(:permitted_params) { { id: nil } }
 
       let(:types_definition) do
-        {
+        Paramore.field({
           id: Paramore.field(Types::Int),
-        }
+        })
       end
 
       it 'raises error' do
@@ -134,9 +114,9 @@ RSpec.describe Paramore::CastParameters, '.run' do
       let(:permitted_params) { { ary: nil } }
 
       let(:types_definition) do
-        {
+        Paramore.field({
           ary: Paramore.field([Types::Int]),
-        }
+        })
       end
 
       it 'raises error' do
@@ -153,11 +133,11 @@ RSpec.describe Paramore::CastParameters, '.run' do
       let(:permitted_params) { { metadata: nil } }
 
       let(:types_definition) do
-        {
+        Paramore.field({
           metadata: Paramore.field({
             email: Paramore.field(Types::Text),
           }),
-        }
+        })
       end
 
       it 'raises error' do

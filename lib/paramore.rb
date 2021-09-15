@@ -1,7 +1,7 @@
 require_relative 'paramore/configuration'
 require_relative 'paramore/railtie'
 require_relative 'paramore/types'
-require_relative 'paramore/field_schema'
+require_relative 'paramore/field'
 
 module Paramore
   class << self
@@ -17,9 +17,9 @@ module Paramore
   end
 
   def self.field(given_type, options = {})
-    Paramore::FieldSchema.new(
+    Paramore::Field.new(
       given_type,
-      **Paramore::FieldSchema::DEFAULT_OPTIONS.merge(options)
+      **Paramore::Field::DEFAULT_OPTIONS.merge(options)
     )
   end
 end

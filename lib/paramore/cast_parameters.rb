@@ -3,59 +3,49 @@ require_relative 'errors'
 module Paramore
   module CastParameters
     module_function
-    def run(types_definition, permitted_params)
-      recursive_merge(
-        recursive_typecast(
-          types_definition, permitted_params
-        )
-      )
+    def run(field, data)
+      recursive_merge(cast(field, data, 'data'))
     end
 
     def recursive_merge(nested_hash_array)
-      nested_hash_array.reduce(:merge).map do |param_name, value|
+      nested_hash_array.reduce(:merge).map do |name, value|
         if value.is_a?(Array) && value.all? { |_value| _value.is_a?(Hash) }
-          { param_name => recursive_merge(value) }
+          { name => recursive_merge(value) }
         else
-          { param_name => value }
+          { name => value }
         end
       end.reduce(:merge)
     end
 
-    def recursive_typecast(types_definition, permitted_params)
-      types_definition.map do |param_name, definition|
-        value = permitted_params[param_name]
-
-        if value.nil?
-          if definition.nullable?
-            next { param_name => nil }
-          else
-            raise Paramore::NilParameter, param_name
-          end
+    def cast(field, value, name = nil)
+      if value.nil?
+        if field.nullable? || field.default
+          return field.default
+        else
+          raise Paramore::NilParameter, name
         end
-
-        { param_name => cast(definition, value) }
       end
-    end
 
-    def cast(definition, value)
-      case definition.type
+      case field.type
       when Hash
-        recursive_typecast(definition.type, value || {})
+        typecast_hash(field.type, value || {})
       when Array
-        typecast_array(definition, value)
+        typecast_array(field, value)
       else
-        typecast_value(definition.type, value)
+        typecast_value(field.type, value)
       end
     end
 
-    def typecast_array(definition, array)
+    def typecast_hash(field, hash)
+      field.map do |name, field|
+        { name => cast(field, hash[name], name) }
+      end
+    end
+
+    def typecast_array(field, array)
       array
-        .reject { |unit| unit.to_s == '' && definition.compact? }
-        .map do |unit|
-          if unit.to_s != '' || definition.use_empty_strings?
-            typecast_value(definition.type.first, unit)
-          end
-        end
+        .reject { |unit| unit.to_s == '' && field.compact? }
+        .map { |unit| typecast_value(field.type.first, unit) }
     end
 
     def typecast_value(type, value)

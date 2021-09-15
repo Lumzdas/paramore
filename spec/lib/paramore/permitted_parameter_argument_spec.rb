@@ -2,7 +2,7 @@ RSpec.describe Paramore::PermittedParameterArgument, '.parse' do
   subject { described_class.parse(types_definition) }
 
   let(:types_definition) do
-    {
+    Paramore.field({
       id: Paramore.field(Types::Int),
       name: Paramore.field(Types::Text),
       metadata: Paramore.field({
@@ -12,10 +12,10 @@ RSpec.describe Paramore::PermittedParameterArgument, '.parse' do
           depth: Paramore.field(Types::Int),
         }),
       }),
-      extra: Paramore.field({
+      extra: Paramore.field([{
         parameter: Paramore.field(Types::Int),
-      }),
-    }
+      }]),
+    })
   end
 
   it "returns an array that rails' .permit expects" do

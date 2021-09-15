@@ -22,7 +22,7 @@ RSpec.describe TestController, 'parameter typecasting', type: :controller do
       'nested' => {
         'email' => 'seeyou@cow.boy',
         'deeper' => {
-          'depths' => [0.0, -15.0, 3000.1, nil]
+          'depths' => [0.0, -15.0, 3000.1, 0.0]
         }
       }
     )
@@ -47,8 +47,8 @@ RSpec.describe TestController, 'parameter typecasting', type: :controller do
     end
   end
 
-  context 'no parameters reach the controller' do
-    let(:params) { {} }
+  context 'nil parameters reach the controller' do
+    let(:params) { nil }
 
     it 'raises error' do
       expect { get :typed, params: params }.to raise_error(ActionController::ParameterMissing)
@@ -59,6 +59,16 @@ RSpec.describe TestController, 'parameter typecasting', type: :controller do
         expect(ParameterInspector).to receive(:for).with({})
         get :default, params: params
       end
+
+      context 'and only the inner param is missing' do
+        let(:params) { { test: { some: :param } } }
+
+        it 'does not raise error and sets the default' do
+          expect(ParameterInspector).to receive(:for).with({ 'id' => 1 })
+          get :default, params: params, as: :json
+        end
+      end
     end
+
   end
 end

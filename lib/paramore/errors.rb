@@ -4,7 +4,7 @@ class Paramore::NilParameter < StandardError
   end
 end
 
-class Paramore::NonFieldSchema < StandardError
+class Paramore::NonField < StandardError
   def initialize(param_name, type)
     super("`#{param_name}` defined as a `#{type.class}`, expected a call of `Paramore.field()`! Perhaps you declared a plain hash instead of Paramore.field({})?")
   end

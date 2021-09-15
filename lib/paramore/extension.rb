@@ -8,9 +8,7 @@ module Paramore
       default
     ].freeze
 
-    def param_schema(accessor_name, configuration)
-      parameter_configuration = configuration.except(*OPTIONS)
-
+    def param_schema(accessor_name, parameter_configuration)
       unless parameter_configuration.keys.size == 1
         raise ArgumentError,
           "Paramore: exactly one required attribute allowed! Given: #{parameter_configuration.keys}"
@@ -19,10 +17,10 @@ module Paramore
       required_parameter_name = parameter_configuration.keys.first
       types_definition = parameter_configuration.values.first
 
-      Paramore::Validate.run(types_definition) if types_definition.is_a?(Hash)
+      Paramore::Validate.run(types_definition) if types_definition.is_a?(Paramore::Field)
 
       permitted_parameter_argument =
-        if types_definition.is_a?(Hash)
+        if types_definition.is_a?(Paramore::Field)
           Paramore::PermittedParameterArgument.parse(types_definition)
         else
           types_definition
@@ -31,8 +29,8 @@ module Paramore
       define_method(accessor_name) do |rails_parameters = params|
         return instance_variable_get("@#{accessor_name}") if instance_variable_defined?("@#{accessor_name}")
 
-        if rails_parameters[required_parameter_name].nil? && configuration[:default]
-          instance_variable_set("@#{accessor_name}", configuration[:default])
+        if rails_parameters[required_parameter_name].nil? && types_definition.default
+          instance_variable_set("@#{accessor_name}", types_definition.default)
           return instance_variable_get("@#{accessor_name}")
         end
 
@@ -41,7 +39,7 @@ module Paramore
           .permit(permitted_parameter_argument)
 
         parameter_values =
-          if types_definition.is_a?(Hash)
+          if types_definition.is_a?(Paramore::Field)
             permitted_params.merge(
               Paramore::CastParameters.run(types_definition, permitted_params)
             ).permit!
