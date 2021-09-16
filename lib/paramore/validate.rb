@@ -10,6 +10,8 @@ module Paramore
             "`#{Paramore.configuration.type_method_name}`!"
         end
       end
+
+      root_field
     end
 
     def types(type)
