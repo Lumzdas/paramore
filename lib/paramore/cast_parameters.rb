@@ -4,17 +4,7 @@ module Paramore
   module CastParameters
     module_function
     def run(field, data)
-      recursive_merge(cast(field, data, 'data'))
-    end
-
-    def recursive_merge(nested_hash_array)
-      nested_hash_array.reduce(:merge).map do |name, value|
-        if value.is_a?(Array) && value.all? { |_value| _value.is_a?(Hash) }
-          { name => recursive_merge(value) }
-        else
-          { name => value }
-        end
-      end.reduce(:merge)
+      cast(field, data, 'data')
     end
 
     def cast(field, value, name = nil)
@@ -37,15 +27,15 @@ module Paramore
     end
 
     def typecast_hash(field, hash)
-      field.map do |name, field|
-        { name => cast(field, hash[name], name) }
-      end
+      field.to_h { |name, field| [name, cast(field, hash[name], name)] }
     end
 
     def typecast_array(field, array)
       array
         .reject { |unit| unit.to_s == '' && field.compact? }
-        .map { |unit| typecast_value(field.type.first, unit) }
+        .map do |unit|
+          cast(Paramore.field(field.type.first, null: true), unit)
+        end
     end
 
     def typecast_value(type, value)

@@ -1,7 +1,7 @@
 RSpec.describe Paramore::CastParameters, '.run' do
-  subject { described_class.run(types_definition, permitted_params) }
+  subject { described_class.run(field, params) }
 
-  let(:permitted_params) do
+  let(:params) do
     {
       id: '1',
       name: "some name \n",
@@ -15,7 +15,7 @@ RSpec.describe Paramore::CastParameters, '.run' do
     }
   end
 
-  let(:types_definition) do
+  let(:field) do
     Paramore.field({
       id: Paramore.field(Types::Int),
       name: Paramore.field(Types::Text),
@@ -36,7 +36,7 @@ RSpec.describe Paramore::CastParameters, '.run' do
         name: 'some name',
         metadata: {
           email: 'email@example.com',
-          tags: [1, 2, 0],
+          tags: [1, 2, nil],
           deeper: {
             depth: 2
           },
@@ -46,7 +46,7 @@ RSpec.describe Paramore::CastParameters, '.run' do
   end
 
   context 'when compacting arrays' do
-    let(:types_definition) do
+    let(:field) do
       Paramore.field({
         metadata: Paramore.field({
           tags: Paramore.field([Types::Int], compact: true),
@@ -65,11 +65,35 @@ RSpec.describe Paramore::CastParameters, '.run' do
     end
   end
 
+  context 'with am array of hashes' do
+    let(:params) do
+      [
+        { a: 1 },
+        { a: 2 },
+        { a: 3, b: 1 },
+      ]
+    end
+
+    let(:field) do
+      Paramore.field([{
+        a: Paramore.field(Types::Int),
+      }])
+    end
+
+    it 'successfully parses the array' do
+      expect(subject).to eq([
+        { a: 1 },
+        { a: 2 },
+        { a: 3 },
+      ])
+    end
+  end
+
   context 'with nil parameters' do
-    let(:permitted_params) { {} }
+    let(:params) { {} }
 
     context 'and nullable types' do
-      let(:types_definition) do
+      let(:field) do
         Paramore.field({
           id: Paramore.field(Types::Int, null: true),
           metadata: Paramore.field({
@@ -92,9 +116,9 @@ RSpec.describe Paramore::CastParameters, '.run' do
     end
 
     context 'and non-nullable flat type' do
-      let(:permitted_params) { { id: nil } }
+      let(:params) { { id: nil } }
 
-      let(:types_definition) do
+      let(:field) do
         Paramore.field({
           id: Paramore.field(Types::Int),
         })
@@ -111,9 +135,9 @@ RSpec.describe Paramore::CastParameters, '.run' do
     end
 
     context 'and non-nullable array type' do
-      let(:permitted_params) { { ary: nil } }
+      let(:params) { { ary: nil } }
 
-      let(:types_definition) do
+      let(:field) do
         Paramore.field({
           ary: Paramore.field([Types::Int]),
         })
@@ -130,9 +154,9 @@ RSpec.describe Paramore::CastParameters, '.run' do
     end
 
     context 'and non-nullable nested type' do
-      let(:permitted_params) { { metadata: nil } }
+      let(:params) { { metadata: nil } }
 
-      let(:types_definition) do
+      let(:field) do
         Paramore.field({
           metadata: Paramore.field({
             email: Paramore.field(Types::Text),
