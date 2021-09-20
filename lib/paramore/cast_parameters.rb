@@ -22,7 +22,11 @@ module Paramore
       when Array
         typecast_array(field, value)
       else
-        typecast_value(field.type, value)
+        if value == '' && !field.allow_empty? && field.nullable?
+          nil
+        else
+          typecast_value(field.type, value)
+        end
       end
     end
 

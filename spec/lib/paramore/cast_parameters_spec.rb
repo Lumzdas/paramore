@@ -65,7 +65,7 @@ RSpec.describe Paramore::CastParameters, '.run' do
     end
   end
 
-  context 'with am array of hashes' do
+  context 'with an array of hashes' do
     let(:params) do
       [
         { a: 1 },
@@ -86,6 +86,28 @@ RSpec.describe Paramore::CastParameters, '.run' do
         { a: 2 },
         { a: 3 },
       ])
+    end
+  end
+
+  context 'with empty strings' do
+    let(:params) { '' }
+
+    let(:field) do
+      Paramore.field(Types::Text, null: true)
+    end
+
+    it 'preserves empty strings' do
+      expect(subject).to eq('')
+    end
+
+    context 'and empty strings are not allowed' do
+      let(:field) do
+        Paramore.field(Types::Text, null: true, empty: false)
+      end
+
+      it 'preserves empty strings' do
+        expect(subject).to eq(nil)
+      end
     end
   end
 
