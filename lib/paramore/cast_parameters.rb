@@ -18,7 +18,7 @@ module Paramore
 
       case field.type
       when Hash
-        typecast_hash(field.type, value || {})
+        typecast_hash(field, value || {})
       when Array
         typecast_array(field, value)
       else
@@ -31,7 +31,11 @@ module Paramore
     end
 
     def typecast_hash(field, hash)
-      field.to_h { |name, field| [name, cast(field, hash[name], name)] }
+      result = field
+        .type
+        .reject { |name, inner_field| !hash.key?(name) && !inner_field.required? }
+        .to_h { |name, inner_field| [name, cast(inner_field, hash[name], name)] }
+      field.compact? ? result.compact : result
     end
 
     def typecast_array(field, array)

@@ -5,14 +5,20 @@ module Paramore
       compact: false,
       default: nil,
       empty: true,
+      required: true,
     }.freeze
 
-    def initialize(given_type, null:, compact:, default:, empty:)
+    def initialize(given_type, null:, compact:, default:, empty:, required:)
       @given_type = given_type
       @nullable = null
       @compact = compact
       @allow_empty = empty
       @default = default
+      @required = required
+    end
+
+    def required?
+      @required
     end
 
     def allow_empty?

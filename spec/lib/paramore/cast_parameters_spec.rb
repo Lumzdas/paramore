@@ -137,6 +137,40 @@ RSpec.describe Paramore::CastParameters, '.run' do
       end
     end
 
+    context 'and compact hash' do
+      let(:field) do
+        Paramore.field({
+          id: Paramore.field(Types::Int, null: true),
+          metadata: Paramore.field({
+            email: Paramore.field(Types::Text, null: true),
+          }, null: true),
+        }, compact: true)
+      end
+
+      it 'reduces the hash' do
+        expect(subject).to eq({})
+      end
+    end
+
+    context 'and not required' do
+      let(:field) do
+        Paramore.field({
+          id: Paramore.field(Types::Int, required: false),
+          metadata: Paramore.field({
+            email: Paramore.field(Types::Text, null: true),
+          }, null: true),
+        })
+      end
+
+      it 'does not keep keys' do
+        expect(subject).to eq(
+          {
+            metadata: nil,
+          },
+        )
+      end
+    end
+
     context 'and default set' do
       let(:field) do
         Paramore.field({
