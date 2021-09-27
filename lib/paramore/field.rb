@@ -19,8 +19,12 @@ module Paramore
       @allow_empty
     end
 
+    def default?
+      !@default.nil?
+    end
+
     def default
-      @default
+      @default.is_a?(Proc) ? @default.call : @default
     end
 
     def compact?

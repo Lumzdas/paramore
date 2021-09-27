@@ -137,6 +137,34 @@ RSpec.describe Paramore::CastParameters, '.run' do
       end
     end
 
+    context 'and default set' do
+      let(:field) do
+        Paramore.field({
+          id: Paramore.field(Types::Text, default: 'antifault')
+        })
+      end
+
+      it 'returns the default value' do
+        expect(Types::Text).not_to receive(:[])
+
+        expect(subject).to eq(id: 'antifault')
+      end
+    end
+
+    context 'and lambda default set' do
+      let(:field) do
+        Paramore.field({
+          id: Paramore.field(Types::Text, default: -> { described_class.to_s })
+        })
+      end
+
+      it 'returns the default value' do
+        expect(Types::Text).not_to receive(:[])
+
+        expect(subject).to eq(id: 'Paramore::CastParameters')
+      end
+    end
+
     context 'and non-nullable flat type' do
       let(:params) { { id: nil } }
 

@@ -9,7 +9,7 @@ module Paramore
 
     def cast(field, value, name = nil)
       if value.nil?
-        if field.nullable? || field.default
+        if field.nullable? || field.default?
           return field.default
         else
           raise Paramore::NilParameter, name
