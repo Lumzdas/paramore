@@ -5,13 +5,13 @@ end
 class TestController < ActionController::Base
   param_schema(
     :typed_params,
-    test: Paramore.field({
-      id: Paramore.field(Paramore::Int, null: false),
-      name: Paramore.field(Paramore::StrippedString),
-      nested: Paramore.field({
-        email: Paramore.field(Paramore::SanitizedString),
-        deeper: Paramore.field({
-          depths: Paramore.field([Paramore::Float])
+    test: field({
+      id: field(Paramore::Int, null: false),
+      name: field(Paramore::StrippedString),
+      nested: field({
+        email: field(Paramore::SanitizedString),
+        deeper: field({
+          depths: field([Paramore::Float])
         })
       })
     })
@@ -24,8 +24,8 @@ class TestController < ActionController::Base
 
   param_schema(
     :with_default,
-    test: Paramore.field({
-      id: Paramore.field(Paramore::Int, default: 1),
+    test: field({
+      id: field(Paramore::Int, default: 1),
     }, default: {})
   )
 

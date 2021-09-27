@@ -8,6 +8,10 @@ module Paramore
       default
     ].freeze
 
+    def field(*args)
+      Paramore.field(*args)
+    end
+
     def param_schema(accessor_name, parameter_configuration)
       unless parameter_configuration.keys.size == 1
         raise ArgumentError,
