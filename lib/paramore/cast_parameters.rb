@@ -54,9 +54,11 @@ module Paramore
     def typecast_array(field, array, name)
       raise Paramore::ArrayExpected.new(name, array) unless array.is_a?(Array)
 
-      array
+      result = array
         .reject { |unit| unit.to_s == '' && field.compact? }
         .map { |unit| cast(Paramore.field(field.type.first, null: true), unit) }
+
+      field.compact? ? result.compact : result
     end
 
     def typecast_value(type, value, name)
