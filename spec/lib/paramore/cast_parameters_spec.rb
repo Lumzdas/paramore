@@ -258,4 +258,30 @@ RSpec.describe Paramore::CastParameters, '.run' do
       end
     end
   end
+
+  context 'with a wild hash' do
+    let(:params) do
+      {
+        a: 1,
+        b: 2,
+        c: 3,
+      }
+    end
+
+    let(:field) do
+      Paramore.field({
+        Paramore::String => Paramore.field(Types::Int)
+      })
+    end
+
+    it 'does not call any of the type classes' do
+      expect(subject).to eq(
+        {
+          'a' => 1,
+          'b' => 2,
+          'c' => 3,
+        },
+      )
+    end
+  end
 end

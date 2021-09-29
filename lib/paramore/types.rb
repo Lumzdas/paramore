@@ -49,4 +49,11 @@ module Paramore
       Paramore::StrippedString[input].squeeze(' ')
     end
   end
+
+  module Date
+    module_function
+    def [](input)
+      input.to_date
+    end
+  end
 end

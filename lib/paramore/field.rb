@@ -1,3 +1,5 @@
+require_relative 'validate'
+
 module Paramore
   class Field
     DEFAULT_OPTIONS = {
@@ -43,6 +45,18 @@ module Paramore
 
     def type
       @given_type
+    end
+
+    def wildly_keyed_hash?
+      type.is_a?(Hash) && self.class.wildly_keyed_hash?(type)
+    end
+
+    def validate!
+      Paramore::Validate.run(self)
+    end
+
+    def self.wildly_keyed_hash?(hash)
+      hash.keys.any? { |key| [Class, Module].include?(key.class) }
     end
   end
 end

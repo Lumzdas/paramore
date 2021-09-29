@@ -20,6 +20,6 @@ module Paramore
     Paramore::Field.new(
       given_type,
       **Paramore::Field::DEFAULT_OPTIONS.merge(options)
-    )
+    ).validate!
   end
 end

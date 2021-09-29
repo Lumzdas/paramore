@@ -26,11 +26,23 @@ module Paramore
     end
 
     def hash_types(hash)
+      validate_wildly_keyed_hash!(hash)
+
       hash.flat_map do |param_name, field|
         raise Paramore::NonField.new(param_name, field) unless field.is_a?(Paramore::Field)
 
         field.type.is_a?(Hash) ? types(field.type) : field.type
       end.uniq
+    end
+
+    def validate_wildly_keyed_hash!(hash)
+      if Paramore::Field.wildly_keyed_hash?(hash) && hash.keys.map(&:class).count > 1
+        raise Paramore::HashTooWild.new(hash)
+      end
+    end
+
+    def wildly_keyed_hash?(hash)
+      [Class, Module].include?(hash.keys.first.class)
     end
   end
 end

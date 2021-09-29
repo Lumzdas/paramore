@@ -45,4 +45,32 @@ RSpec.describe Paramore::Validate, '.run' do
       )
     end
   end
+
+  context 'with a wild hash' do
+    let(:types_definition) do
+      Paramore.field({
+        Paramore::String => Paramore.field(Paramore::String)
+      })
+    end
+
+    it 'does not raise' do
+      expect { subject }.not_to raise_error
+    end
+  end
+
+  context 'with an overly wild hash' do
+    let(:types_definition) do
+      Paramore.field({
+        Paramore::String => Paramore.field(Paramore::String),
+        Paramore::Int => Paramore.field(Paramore::Int)
+      })
+    end
+
+    it 'raises' do
+      expect { subject }.to raise_error(
+        Paramore::HashTooWild,
+        'A hash field with a type as key may not contain any more entries! (so, eg.: { String => field } is ok, but { String => field, user_id: field } is not)'
+      )
+    end
+  end
 end

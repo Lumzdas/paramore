@@ -1,4 +1,3 @@
-require_relative 'validate'
 require_relative 'cast_parameters'
 require_relative 'permitted_parameter_argument'
 
@@ -20,8 +19,6 @@ module Paramore
 
       required_parameter_name = parameter_configuration.keys.first
       types_definition = parameter_configuration.values.first
-
-      Paramore::Validate.run(types_definition) if types_definition.is_a?(Paramore::Field)
 
       permitted_parameter_argument =
         if types_definition.is_a?(Paramore::Field)
@@ -45,7 +42,7 @@ module Paramore
         parameter_values =
           if types_definition.is_a?(Paramore::Field)
             permitted_params.merge(
-              Paramore::CastParameters.run(types_definition, permitted_params)
+              Paramore::CastParameters.run(types_definition, permitted_params.to_hash.with_indifferent_access)
             ).permit!
           else
             permitted_params.permit!
