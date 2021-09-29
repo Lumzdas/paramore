@@ -53,7 +53,7 @@ module Paramore
   module Date
     module_function
     def [](input)
-      Date.parse(input)
+      ::Date.parse(input)
     end
   end
 end

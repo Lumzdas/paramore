@@ -29,6 +29,13 @@ class TestController < ActionController::Base
     }, default: {})
   )
 
+  param_schema(
+    :with_wild_hash,
+    test: field({
+      wild: field(Paramore::String => field(Paramore::Int))
+    })
+  )
+
   def typed
     ParameterInspector.for(typed_params)
     head 200 and return
@@ -41,6 +48,11 @@ class TestController < ActionController::Base
 
   def default
     ParameterInspector.for(with_default)
+    head 200 and return
+  end
+
+  def wild
+    ParameterInspector.for(with_wild_hash)
     head 200 and return
   end
 end

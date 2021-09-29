@@ -69,6 +69,31 @@ RSpec.describe TestController, 'parameter typecasting', type: :controller do
         end
       end
     end
+  end
 
+  context 'wild hash' do
+    let(:params) do
+      {
+        test: {
+          wild: {
+            a: '1',
+            b: '2',
+            c: '3',
+          }
+        }
+      }
+    end
+
+    it 'permits and casts the params' do
+      expect(ParameterInspector).to receive(:for).with(
+        'wild' => {
+          'a' => 1,
+          'b' => 2,
+          'c' => 3,
+        }
+      )
+
+      get :wild, params: params
+    end
   end
 end
