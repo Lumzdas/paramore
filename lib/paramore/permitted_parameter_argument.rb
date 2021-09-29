@@ -13,11 +13,15 @@ module Paramore
           parse_type(type.first)
         when Hash
           type.map do |name, field|
-            case field.type
-            when Array, Hash
-              { name => parse_type(field.type) }
+            if field.wildly_keyed_hash?
+              { name => {} }
             else
-              name
+              case field.type
+              when Array, Hash
+                { name => parse_type(field.type) }
+              else
+                name
+              end
             end
           end
         else

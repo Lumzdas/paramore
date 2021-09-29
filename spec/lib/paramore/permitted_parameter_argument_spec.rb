@@ -15,12 +15,15 @@ RSpec.describe Paramore::PermittedParameterArgument, '.parse' do
       extra: Paramore.field([{
         parameter: Paramore.field(Types::Int),
       }]),
+      wild: Paramore.field(
+        Paramore::String => Paramore.field(Paramore::String)
+      )
     })
   end
 
   it "returns an array that rails' .permit expects" do
     expect(subject).to eq(
-      [:id, :name, metadata: [:email, tags: [], deeper: [:depth]], extra: [:parameter]]
+      [:id, :name, metadata: [:email, tags: [], deeper: [:depth]], extra: [:parameter], wild: {}]
     )
   end
 end
