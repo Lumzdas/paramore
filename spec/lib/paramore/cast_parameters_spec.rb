@@ -96,17 +96,17 @@ RSpec.describe Paramore::CastParameters, '.run' do
       Paramore.field(Types::Text, null: true)
     end
 
-    it 'does not preserve empty strings' do
-      expect(subject).to eq(nil)
+    it 'preserves empty strings' do
+      expect(subject).to eq('')
     end
 
-    context 'and empty strings are allowed' do
+    context 'and empty strings are not allowed' do
       let(:field) do
-        Paramore.field(Types::Text, null: true, empty: true)
+        Paramore.field(Types::Text, null: true, empty: false)
       end
 
       it 'preserves empty strings' do
-        expect(subject).to eq('')
+        expect(subject).to eq(nil)
       end
     end
   end

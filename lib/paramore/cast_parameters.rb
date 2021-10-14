@@ -22,8 +22,14 @@ module Paramore
       when Array
         typecast_array(field, value, name)
       else
-        if value == '' && !field.allow_empty? && field.nullable?
-          nil
+        if value == '' && !field.allow_empty?
+          if field.default?
+            field.default
+          elsif field.nullable?
+            nil
+          else
+            raise Paramore::NilParameter, name
+          end
         else
           typecast_value(field.type, value, name)
         end

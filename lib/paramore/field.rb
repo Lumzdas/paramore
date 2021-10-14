@@ -6,7 +6,7 @@ module Paramore
       null: false,
       compact: false,
       default: nil,
-      empty: false,
+      empty: true,
       required: true,
     }.freeze
 
