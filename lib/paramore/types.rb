@@ -56,4 +56,20 @@ module Paramore
       ::Date.parse(input)
     end
   end
+
+  module File
+    VALID_CLASSES = [
+      File,
+      StringIO,
+      Rack::Test::UploadedFile,
+      ActionDispatch::Http::UploadedFile,
+    ].freeze
+
+    module_function
+    def [](input)
+      raise "#{input.class} is not a file!" unless input.class.in?(VALID_CLASSES)
+
+      input
+    end
+  end
 end

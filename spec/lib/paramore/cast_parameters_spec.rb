@@ -91,22 +91,38 @@ RSpec.describe Paramore::CastParameters, '.run' do
 
   context 'with empty strings' do
     let(:params) { '' }
+    let(:field) { Paramore.field(Types::Text) }
 
-    let(:field) do
-      Paramore.field(Types::Text, null: true)
+    it 'raises error' do
+      expect(Types::Text).not_to receive(:[])
+      expect { subject }.to raise_error(
+        an_instance_of(Paramore::NilParameter).and having_attributes(
+          message: a_string_including('`data`')
+        )
+      )
     end
 
-    it 'preserves empty strings' do
-      expect(subject).to eq('')
-    end
+    context 'and empty string are allowed' do
+      let(:field) { Paramore.field(Types::Text, empty: true) }
 
-    context 'and empty strings are not allowed' do
-      let(:field) do
-        Paramore.field(Types::Text, null: true, empty: false)
+      it 'preserves empty strings' do
+        expect(subject).to eq('')
       end
+    end
+
+    context 'and nulls are allowed instead' do
+      let(:field) { Paramore.field(Types::Text, null: true) }
 
       it 'preserves empty strings' do
         expect(subject).to eq(nil)
+      end
+    end
+
+    context 'and a default is supplied instead' do
+      let(:field) { Paramore.field(Types::Text, default: 'asd') }
+
+      it 'preserves empty strings' do
+        expect(subject).to eq('asd')
       end
     end
   end

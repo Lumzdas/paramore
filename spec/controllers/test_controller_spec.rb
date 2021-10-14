@@ -22,7 +22,7 @@ RSpec.describe TestController, 'parameter typecasting', type: :controller do
       'nested' => {
         'email' => 'seeyou@cow.boy',
         'deeper' => {
-          'depths' => [0.0, -15.0, 3000.1, 0.0]
+          'depths' => [0.0, -15.0, 3000.1, nil]
         }
       }
     )
