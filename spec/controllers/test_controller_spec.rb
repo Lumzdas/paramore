@@ -96,4 +96,26 @@ RSpec.describe TestController, 'parameter typecasting', type: :controller do
       get :wild, params: params
     end
   end
+
+  context 'almost flat structure' do
+    let(:params) do
+      { number: '17' }
+    end
+
+    it 'permits and casts the params' do
+      expect(ParameterInspector).to receive(:for).with(17)
+
+      get :almost_flat, params: params
+    end
+
+    context 'and no parameter exists' do
+      let(:params) { {} }
+
+      it 'returns the default' do
+        expect(ParameterInspector).to receive(:for).with(42)
+
+        get :almost_flat, params: params
+      end
+    end
+  end
 end

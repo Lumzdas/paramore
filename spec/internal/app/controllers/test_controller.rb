@@ -36,6 +36,11 @@ class TestController < ActionController::Base
     })
   )
 
+  param_schema(
+    :almost_flat_params,
+    number: field(Paramore::Int, default: 42)
+  )
+
   def typed
     ParameterInspector.for(typed_params)
     head 200 and return
@@ -53,6 +58,11 @@ class TestController < ActionController::Base
 
   def wild
     ParameterInspector.for(with_wild_hash)
+    head 200 and return
+  end
+
+  def almost_flat
+    ParameterInspector.for(almost_flat_params)
     head 200 and return
   end
 end
