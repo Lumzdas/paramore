@@ -1,5 +1,7 @@
 RSpec.describe Paramore::CastParameters, '.run' do
-  subject { described_class.run(field, params) }
+  subject { described_class.run(field, params, no_extra_keys: no_extra_keys) }
+
+  let(:no_extra_keys) { false }
 
   let(:params) do
     {
@@ -97,7 +99,7 @@ RSpec.describe Paramore::CastParameters, '.run' do
       expect(Types::Text).not_to receive(:[])
       expect { subject }.to raise_error(
         an_instance_of(Paramore::NilParameter).and having_attributes(
-          message: a_string_including('`data`')
+          message: a_string_including('Received a nil root field, but its type is non nullable!')
         )
       )
     end
@@ -228,7 +230,7 @@ RSpec.describe Paramore::CastParameters, '.run' do
         expect(Types::Int).not_to receive(:[])
         expect { subject }.to raise_error(
           an_instance_of(Paramore::NilParameter).and having_attributes(
-            message: a_string_including('`id`')
+            message: a_string_including('Received a nil `id`, but its type is non nullable!')
           )
         )
       end
@@ -247,7 +249,7 @@ RSpec.describe Paramore::CastParameters, '.run' do
         expect(Types::Int).not_to receive(:[])
         expect { subject }.to raise_error(
           an_instance_of(Paramore::NilParameter).and having_attributes(
-            message: a_string_including('`ary`')
+            message: a_string_including('Received a nil `ary`, but its type is non nullable!')
           )
         )
       end
@@ -268,7 +270,7 @@ RSpec.describe Paramore::CastParameters, '.run' do
         expect(Types::Text).not_to receive(:[])
         expect { subject }.to raise_error(
           an_instance_of(Paramore::NilParameter).and having_attributes(
-            message: a_string_including('`metadata`')
+            message: a_string_including('Received a nil `metadata`, but its type is non nullable!')
           )
         )
       end
@@ -297,6 +299,79 @@ RSpec.describe Paramore::CastParameters, '.run' do
           'b' => 2,
           'c' => 3,
         },
+      )
+    end
+  end
+
+  context 'with no_extra_keys' do
+    let(:no_extra_keys) { true }
+
+    let(:params) do
+      {
+        id: '1',
+        idz: '2',
+      }
+    end
+
+    let(:field) do
+      Paramore.field(id: Paramore.field(Types::Int))
+    end
+
+    it 'raises' do
+      expect { subject }.to raise_error(
+        an_instance_of(RuntimeError).and having_attributes(
+          message: a_string_including('Found extra keys in root field: [:idz]!')
+        )
+      )
+    end
+  end
+
+  context 'invalid input' do
+    let(:params) do
+      {
+        id: '1.0',
+      }
+    end
+
+    let(:field) do
+      Paramore.field(id: Paramore.field(Types::Int))
+    end
+
+    it 'raises' do
+      expect { subject }.to raise_error(
+        an_instance_of(RuntimeError).and having_attributes(
+          message: a_string_including('Tried casting `id`, but "1.0 is not an integer!" was raised!')
+        )
+      )
+    end
+  end
+
+  context 'nested invalid input' do
+    let(:params) do
+      {
+        a: {
+          b: {
+            c: '1.0',
+          }
+        },
+      }
+    end
+
+    let(:field) do
+      Paramore.field({
+        a: Paramore.field({
+          b: Paramore.field({
+            c: Paramore.field(Types::Int),
+          }),
+        }),
+      })
+    end
+
+    it 'raises' do
+      expect { subject }.to raise_error(
+        an_instance_of(RuntimeError).and having_attributes(
+          message: a_string_including('Tried casting `a.b.c`, but "1.0 is not an integer!" was raised!')
+        )
       )
     end
   end

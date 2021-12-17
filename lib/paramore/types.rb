@@ -1,7 +1,14 @@
 module Paramore
+  module TypeRegexes
+    INTEGER_REGEX = /^-{0,1}\d+$/
+    FLOAT_REGEX = /^-{0,1}\d+(\.\d*){0,1}$/
+  end
+
   module BigDecimal
     module_function
     def [](input)
+      raise ArgumentError "#{input} is not a BigDecimal!" unless input.to_s.match?(TypeRegexes::FLOAT_REGEX)
+
       BigDecimal(input)
     end
   end
@@ -18,6 +25,8 @@ module Paramore
   module Float
     module_function
     def [](input)
+      raise ArgumentError "#{input} is not a Float!" unless input.to_s.match?(TypeRegexes::FLOAT_REGEX)
+
       input.to_f
     end
   end
@@ -25,6 +34,8 @@ module Paramore
   module Int
     module_function
     def [](input)
+      raise ArgumentError, "#{input} is not an Integer!" unless input.to_s.match?(TypeRegexes::INTEGER_REGEX)
+
       input.to_i
     end
   end
