@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'combustion', '~> 1.3'
   spec.add_development_dependency 'pry'#, '~> 1.3'
 
-  spec.add_runtime_dependency 'rails', '>= 5.0 ', '< 7'
+  spec.add_runtime_dependency 'rails', '>= 5.0'
 
   spec.post_install_message = <<~MSG
     Thank you for installing Paramore #{version} !
